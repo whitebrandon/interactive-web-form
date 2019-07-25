@@ -130,6 +130,27 @@
 /* ============================================
    =========== Payment Info Section ===========
    ============================================ */
+   const $creditCard = $('#payment').next();
+   const $paypal = $('#payment').next().next().first();
+   const $bitcoin = $('#payment').next().next().next().first();
+   $paypal.hide();
+   $bitcoin.hide();
+   $('#payment :first-child').hide();
+   $('#payment').on('change', function () {
+       if ($(this).val() === "paypal") {
+           $paypal.show()
+           $bitcoin.hide();
+           $creditCard.hide();
+       } else if ($(this).val() === "bitcoin") {
+           $bitcoin.show();
+           $paypal.hide();
+           $creditCard.hide();
+       } else if ($(this).val() === "credit card") {
+           $creditCard.show();
+           $paypal.hide();
+           $bitcoin.hide();
+       }
+   })
 
 /* ============================================
    ================ Validation ================
