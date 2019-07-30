@@ -1,31 +1,4 @@
 /* ============================================
-   ============= Global Variables =============
-   ============================================ */
-
-let totalCost = 0; // ← Holds cost for registered activities
-const $totalMsg = $('<p>'); // ← Creates paragraph that will hold message that displays running total
-const $creditCard = $('#payment').next(); // ← Grabs credit card payment option
-const $paypal = $('#payment').next().next().first(); // ← Grabs paypal payment option
-const $bitcoin = $('#payment').next().next().next().first(); // ← Grabs bitcoin payment option
-
-/* ============================================
-   ============= Global Functions =============
-   ============================================ */
-
-// ↓ A function that returns a day of the week substring from the selected activity
-const getDay = (string) => {
-    const $emdashIndex = string.indexOf('—');
-    const $day = string.slice($emdashIndex + 2, $emdashIndex + 12);
-    const $eodIndex = $day.indexOf(' ');
-    return $day.substring(0, $eodIndex);
-}
-// ↓ A function that returns a start time substring from the selected activity
-const getTime = (string) => {
-    const $hypenIndex = string.indexOf('-');
-    return string.slice($hypenIndex - 3, $hypenIndex);
-}
-
-/* ============================================
    ============ Basic Info Section ============
    ============================================ */
 
@@ -95,8 +68,22 @@ $('#design').on('change', function () {
    ============ Activities Section ============
    ============================================ */
 
+let totalCost = 0; // ← Holds cost for registered activities
+const $totalMsg = $('<p>'); // ← Creates paragraph that will hold message that displays running total
 // ↓ Adds total message paragraph to bottom of fieldset, and hides it
 $('.activities').append($totalMsg.hide());
+// ↓ A function that returns a day of the week substring from the selected activity
+const getDay = (string) => {
+    const $emdashIndex = string.indexOf('—');
+    const $day = string.slice($emdashIndex + 2, $emdashIndex + 12);
+    const $eodIndex = $day.indexOf(' ');
+    return $day.substring(0, $eodIndex);
+}
+// ↓ A function that returns a start time substring from the selected activity
+const getTime = (string) => {
+    const $hypenIndex = string.indexOf('-');
+    return string.slice($hypenIndex - 3, $hypenIndex);
+}
 // ↓ Listens for change events that occur on inputs
 $('.activities').on('change', 'input', function () {
     const $currentInput = $(this); // Grabs the target of the event
@@ -124,25 +111,35 @@ $('.activities').on('change', 'input', function () {
         const $comparisonText = $(this).parent().text();
         const $dayToCompare = getDay($comparisonText); // ← Stores day of activity to be compared
         const $timeToCompare = getTime($comparisonText); // ← Stores time of activity to be compared
-            if ($dayOf === $dayToCompare && 
-                $timeOf === $timeToCompare) {
-                // ↓ Enables iteration of comparison activity, if disabled -- RESET
-                if ($(this).prop('disabled') === true) {
-                    $(this).removeAttr('disabled');
-                    $(this).parent().css("text-decoration", "none");
-                // ↓ Disables iteration of comparison activity if it conflicts with 
-                //   day and time of selected activity
-                } else if ($currentInput.parent().text() !== $(this).parent().text()) {
-                    $(this).attr("disabled", true);
-                    $(this).parent().css("text-decoration", "line-through");
-                }
+        if ($dayOf === $dayToCompare && 
+            $timeOf === $timeToCompare) {
+            // ↓ Enables iteration of comparison activity, if disabled -- RESET
+            if ($(this).prop('disabled') === true) {
+                $(this).removeAttr('disabled');
+                $(this).parent().css("text-decoration", "none");
+            // ↓ Disables iteration of comparison activity if it conflicts with 
+            //   day and time of selected activity
+            } else if ($currentInput.parent().text() !== $(this).parent().text()) {
+                $(this).attr("disabled", true);
+                $(this).parent().css("text-decoration", "line-through");
             }
+        }
     })
 })
 
 /* ============================================
    =========== Payment Info Section ===========
    ============================================ */
+
+const $creditCard = $('#payment').next(); // ← Grabs credit card payment option
+const $paypal = $('#payment').next().next().first(); // ← Grabs paypal payment option
+const $bitcoin = $('#payment').next().next().next().first(); // ← Grabs bitcoin payment option
+
+const togglePayDisplay = (showEl, hideEl_1, hideEl_2) => {
+    showEl['show']();
+    hideEl_1['hide']();
+    hideEl_2['hide']();
+}
 
 $paypal.hide(); // ← Hides paypal payment option on load
 $bitcoin.hide(); // ← Hides bitcoin payment option on load
@@ -151,153 +148,102 @@ $('#payment :first-child').hide(); // ← Hides "Select Payment Method" from "..
 $('#cc-num').focus(() => {
     $('#payment option[value="credit card"]').attr("selected", true);
 });
+
 $('#payment').on('change', function () {
     if ($(this).val() === "paypal") {
-        $paypal.show()
-        $bitcoin.hide();
-        $creditCard.hide();
+        togglePayDisplay($paypal, $bitcoin, $creditCard);
     } else if ($(this).val() === "bitcoin") {
-        $bitcoin.show();
-        $paypal.hide();
-        $creditCard.hide();
+        togglePayDisplay($bitcoin, $paypal, $creditCard);
     } else if ($(this).val() === "credit card") {
-        $creditCard.show();
-        $paypal.hide();
-        $bitcoin.hide();
+        togglePayDisplay($creditCard, $paypal, $bitcoin);
     }
-})
+});
 
 /* ============================================
    ================ Validation ================
    ============================================ */
 
-$('<div>').insertBefore('#name').html('<p>Please enter your name</p>').css("color", "red").hide();
-$('<div>').insertBefore('#mail').html('<p>Please enter a valid email address</p>').css("color", "red").hide();
-$('<div>').insertBefore('.activities label:eq(0)').html('<p>Please choose an activity</p>').css("color", "red").hide();
-$('<div>').insertAfter('#cc-num').html('<p>Please enter a valid credit card number</p>').css("color", "red").hide();
-$('<div>').insertAfter('#zip').html('<p>Please enter a valid zip code</p>').css("color", "red").hide();
-$('<div>').insertAfter('#cvv').html('<p>Please enter a valid cvv</p>').css("color", "red").hide();
+const errorMessages = [ 
+    {prop: 'Before', el: '#name', msg: 'enter a name'},
+    {prop: 'Before', el: '#mail', msg: 'enter an email address'},
+    {prop: 'Before', el: '.activities label:eq(0)', msg: 'choose an activity'},
+    {prop: 'After', el: '#cc-num', msg: 'enter a credit card number'},
+    {prop: 'After', el: '#zip', msg: 'enter a zip code'},
+    {prop: 'After', el: '#cvv', msg: 'enter a cvv'} 
+];
 
+regex = {
+    name: /\w+/, 
+    mail: /^[^@]+@[^@.]+\.[a-z]+$/i, 
+    cc_num: /^\d{13,16}$/, 
+    zip: /^\d{5}$/, 
+    cvv: /^\d{3}$/
+};
 
-const isValidName = () => {
-    const isValid = /\w+/.test($('#name').val());
-    if (!isValid) {
-        $('#name').css("border", "2px solid red");
-        $('#name').prev().slideDown();
-        return false;
-    } else {
-        $('#name').css("border", "2px solid #b0d3e2");
-        $('#name').prev().slideUp();
-        return true;
-    }   
+const createTooltip = (befOrAft, element, message) => {
+    $('<div>')['insert' + befOrAft](element).html(`<p>Please ${message}</p>`).css("color", "red").hide();
 }
 
-const isValidEmail = () => {
-    const isValid = /^[^@]+@[^@.]+\.[a-z]+$/i.test($('#mail').val());
-    if (!isValid) {
-        $('#mail').css("border", "2px solid red");
-        $('#mail').prev().slideDown();
-        return false;
-    } else {
-        $('#mail').css("border", "2px solid #b0d3e2");
-        $('#mail').prev().slideUp();
-        return true;
+const bindEvent = (element, regex, method, maxNumber) => {
+    $(element).on('input blur', () => {
+    if (maxNumber) {
+        $(element).attr("maxlength", maxNumber);
     }
-}
-
-const isActivityChecked = () => {
-    const activityArr = [];
-    $('.activities input').each(function () {
-        if ($(this).prop('checked') === true) {
-            activityArr.push(true);
+    (function () {
+        let isValid = regex.test($(element).val());
+        if (!isValid) {
+            $(element).css("border", "2px solid red")[method]().slideDown();
         } else {
-            activityArr.push(false);
+            $(element).css("border", "2px solid #b0d3e2")[method]().slideUp();
         }
+        return isValid;
+    })();
+    })
+}
+const isActivityChecked = () => {
+    const activitiesBoolList = [];
+    $('.activities input').each(function () {
+        activitiesBoolList.push($(this).prop('checked'))
     });
-    if (activityArr.includes(true)) {
+    if (activitiesBoolList.includes(true)) {
         $('.activities label:eq(0)').prev().slideUp();
         return true;
     } else {
         $('.activities label:eq(0)').prev().slideDown();
         return false;
-    }
+    };
 }
 
-const isValidCardNumber = () => {
-    const isValid = /^\d{13,16}$/.test($('#cc-num').val());
-    if (!isValid) {
-        $('#cc-num').css("border", "2px solid red");
-        $('#cc-num').next().slideDown();
-        return false;
-    } else {
-        $('#cc-num').css("border", "2px solid #b0d3e2");
-        $('#cc-num').next().slideUp();
-        return true;
-    }
-}
+for (let i = 0; i < errorMessages.length; i++) {
+    createTooltip(errorMessages[i].prop, errorMessages[i].el, errorMessages[i].msg);
+};
 
-const isValidZip = () => {
-    const isValid = /^\d{5}$/.test($('#zip').val());
-    if (!isValid) {
-        $('#zip').css("border", "2px solid red");
-        $('#zip').next().slideDown();
-        return false;
-    } else {
-        $('#zip').css("border", "2px solid #b0d3e2");
-        $('#zip').next().slideUp();
-        return true;
-    }
-}
+bindEvent('#name', regex.name, 'prev');
+bindEvent('#mail', regex.mail, 'prev');
+bindEvent('#cc-num', regex.cc_num, 'next', 16);
+bindEvent('#zip', regex.zip, 'next', 5);
+bindEvent('#cvv', regex.cvv, 'next', 3);
 
-const isValidCVV = () => {
-    const isValid = /^\d{3}$/.test($('#cvv').val());
-    if (!isValid) {
-        $('#cvv').css("border", "2px solid red");
-        $('#cvv').next().slideDown();
-        return false;
-    } else {
-        $('#cvv').css("border", "2px solid #b0d3e2");
-        $('#cvv').next().slideUp();
-        return true;
-    }
-}
-
-$('#name').on('input blur', () => {
-    const trueOrFalse = isValidName();
-});
-$('#mail').on('input blur', () => {
-    const trueOrFalse = isValidEmail();
-});
 $('.activities').on('change blur', 'input', () => {
-    const trueOrFalse = isActivityChecked();
-});
-$('#cc-num').on('input blur', () => {
-    $('#cc-num').attr("maxlength", 16);
-    const trueOrFalse = isValidCardNumber();
-});
-$('#zip').on('input blur', () => {
-    $('#zip').attr("maxlength", 5);
-    const trueOrFalse = isValidZip();
-});
-$('#cvv').on('input blur', () => {
-    $('#cvv').attr("maxlength", 3);
-    const trueOrFalse = isValidCVV();
+    isActivityChecked();
 });
 
 $('form').submit((event) => {
+    $('input[id]').each(function () {
+        $(this).blur();                           
+    });
+    $('.activities input').blur();
     if ($('#payment').val() === "credit card" ||
         $('#payment').val() === "select_method") {
-        if (!isValidCardNumber() || !isValidZip() || !isValidCVV()) {
-            isValidCardNumber(); 
-            isValidZip(); 
-            isValidCVV();
-            event.preventDefault();
+        if (!regex.cc_num.test($('#cc-num').val()) ||
+            !regex.zip.text($('#zip').val()) ||
+            !regex.cvv.text($('#cvv').val())) {
+                event.preventDefault();
         }
     }
-    if (!isValidName() || !isValidEmail() || !isActivityChecked()) {
-        isValidName(); 
-        isValidEmail(); 
-        isActivityChecked();
-        event.preventDefault();
+    if (!regex.name.test($('#name').val()) ||
+        !regex.mail.text($('#mail').val()) ||
+        !isActivityChecked()) {
+            event.preventDefault();
     }
 });
