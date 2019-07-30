@@ -134,13 +134,12 @@ $('.activities').on('change', 'input', function () {
 const $creditCard = $('#payment').next(); // ← Grabs credit card payment option
 const $paypal = $('#payment').next().next().first(); // ← Grabs paypal payment option
 const $bitcoin = $('#payment').next().next().next().first(); // ← Grabs bitcoin payment option
-
+// ↓ Function that—when called—toggles display of the payment options
 const togglePayDisplay = (showEl, hideEl_1, hideEl_2) => {
     showEl['show']();
     hideEl_1['hide']();
     hideEl_2['hide']();
 }
-
 $paypal.hide(); // ← Hides paypal payment option on load
 $bitcoin.hide(); // ← Hides bitcoin payment option on load
 $('#payment :first-child').hide(); // ← Hides "Select Payment Method" from "...pay with:" drop down
@@ -148,7 +147,8 @@ $('#payment :first-child').hide(); // ← Hides "Select Payment Method" from "..
 $('#cc-num').focus(() => {
     $('#payment option[value="credit card"]').attr("selected", true);
 });
-
+// ↓ Add eventListener to payment select, that calls the 
+//   togglePayDisplay function and shows/hides appropriate payment options
 $('#payment').on('change', function () {
     if ($(this).val() === "paypal") {
         togglePayDisplay($paypal, $bitcoin, $creditCard);
@@ -163,6 +163,7 @@ $('#payment').on('change', function () {
    ================ Validation ================
    ============================================ */
 
+// ↓ Array to hold a series of object, which will be used as arguments for createTooltip function
 const errorMessages = [ 
     {prop: 'Before', el: '#name', msg: 'enter a name'},
     {prop: 'Before', el: '#mail', msg: 'enter an email address'},
@@ -171,7 +172,7 @@ const errorMessages = [
     {prop: 'After', el: '#zip', msg: 'enter a zip code'},
     {prop: 'After', el: '#cvv', msg: 'enter a cvv'} 
 ];
-
+// ↓ Object to hold regular expressions for validation
 regex = {
     name: /\w+/, 
     mail: /^[^@]+@[^@.]+\.[a-z]+$/i, 
@@ -179,68 +180,81 @@ regex = {
     zip: /^\d{5}$/, 
     cvv: /^\d{3}$/
 };
-
+// ↓ Function that when called will create error message and adds it to page
 const createTooltip = (befOrAft, element, message) => {
     $('<div>')['insert' + befOrAft](element).html(`<p>Please ${message}</p>`).css("color", "red").hide();
 }
-
+// ↓ Function that adds an eventListener to an [input] element
 const bindEvent = (element, regex, method, maxNumber) => {
-    $(element).on('input blur', () => {
-    if (maxNumber) {
+    $(element).on('input blur', () => { // ← Listens for 'input' and 'blur' events
+    if (maxNumber) { // ← Adds a maxlength attribute if a maxNumber arg is passed into function
         $(element).attr("maxlength", maxNumber);
     }
+    // ↓ This IEFE creates the actual function that validates the text input
     (function () {
-        let isValid = regex.test($(element).val());
-        if (!isValid) {
+        let isValid = regex.test($(element).val()); // ← test regex stores bool into isValid
+        if (!isValid) { // ↓ If isValid is false, show tootlip
             $(element).css("border", "2px solid red")[method]().slideDown();
-        } else {
+        } else { // ↓ If isValid is true, hide tooltip
             $(element).css("border", "2px solid #b0d3e2")[method]().slideUp();
         }
-        return isValid;
     })();
     })
 }
+// ↓ Creates validation for activities fieldset
 const isActivityChecked = () => {
-    const activitiesBoolList = [];
+    const activitiesBoolList = []; // ← Creates an empty array
+
+    // ↓ Goes through each checkbox in the activities fieldset,
+    //   checks if it is checked property is true, and pushes
+    //   whatever that value is into the actvitiesdBoolList
     $('.activities input').each(function () {
         activitiesBoolList.push($(this).prop('checked'))
     });
+    // ↓ If any of the checkboxes were/are true, hide tooltip
     if (activitiesBoolList.includes(true)) {
         $('.activities label:eq(0)').prev().slideUp();
         return true;
+    // ↓ If none of the checkboxes were/are true, show tooltip
     } else {
         $('.activities label:eq(0)').prev().slideDown();
         return false;
     };
 }
-
+// ↓ Loops through errorMessages array an creates tooltips for each errorMessage object
 for (let i = 0; i < errorMessages.length; i++) {
     createTooltip(errorMessages[i].prop, errorMessages[i].el, errorMessages[i].msg);
 };
-
+// ↓ Calls bindEvent function for each text input that requires validation
 bindEvent('#name', regex.name, 'prev');
 bindEvent('#mail', regex.mail, 'prev');
 bindEvent('#cc-num', regex.cc_num, 'next', 16);
 bindEvent('#zip', regex.zip, 'next', 5);
 bindEvent('#cvv', regex.cvv, 'next', 3);
-
+// ↓ Listens for 'change' and/or 'blur' on any of the checkboxes in the activities fieldset,
+//   and when triggered calls the isActivityChecked (validation) function
 $('.activities').on('change blur', 'input', () => {
     isActivityChecked();
 });
 
 $('form').submit((event) => {
+    // ↓ Triggers event on all eventListeners just in case user has not
     $('input[id]').each(function () {
         $(this).blur();                           
     });
     $('.activities input').blur();
+    // ↓ If selected payment option is equal to credit card, or unchanaged from page load:
     if ($('#payment').val() === "credit card" ||
         $('#payment').val() === "select_method") {
+        // ↓ then validate the credit card info: if false, prevent submission of form
         if (!regex.cc_num.test($('#cc-num').val()) ||
             !regex.zip.text($('#zip').val()) ||
             !regex.cvv.text($('#cvv').val())) {
                 event.preventDefault();
         }
     }
+    // ↓ Validate the name, email, and activities fieldset inputs:
+    //   And if false, prevent submission of form
     if (!regex.name.test($('#name').val()) ||
         !regex.mail.text($('#mail').val()) ||
         !isActivityChecked()) {
