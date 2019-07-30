@@ -128,6 +128,11 @@ option {
 	font-family: 'roboto', sans-serif;
 }
 
+div > p {
+	margin: 0 0 .75em;
+	margin-top: -.625em;
+}
+
 /* ================================= 
   Page Styles
 ==================================== */
