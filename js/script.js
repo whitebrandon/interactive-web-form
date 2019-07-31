@@ -198,6 +198,20 @@ const bindEvent = (element, regex, method, maxNumber) => {
         } else { // ↓ If isValid is true, hide tooltip
             $(element).css("border", "2px solid #b0d3e2")[method]().slideUp();
         }
+            // ↓ Upon reaching max char limit, a keypress eventListener is added to input
+            if ($(element).val().length === maxNumber) {
+                // ↓ If user attempts to key additional chars the tooltip message
+                //   is changed to one that states the max char limit for input
+                $(element).on('keypress', function () { 
+                    $(this).next()
+                              .html(`<p>Field can not be longer than ${maxNumber} characters</p>`)
+                              .slideDown().delay(2000).slideUp();
+                });
+            } else { // ↓ If user deletes a char, the tooltip message reverts to orig version
+                     //   and the keypress eventListener is removed from input
+                $(element).next().html(`<p>Please ${errorMessages[index].msg}</p>`);
+                $(element).off('keypress');
+            };
     })();
     })
 }
