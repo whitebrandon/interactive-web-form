@@ -248,14 +248,14 @@ $('form').submit((event) => {
         $('#payment').val() === "select_method") {
         // ↓ then validate the credit card info: if false, prevent submission of form
         if (!regex.cc_num.test($('#cc-num').val()) ||
-            !regex.zip.text($('#zip').val()) ||
-            !regex.cvv.text($('#cvv').val())) {
-                event.preventDefault();
+                !regex.zip.test($('#zip').val()) ||
+                !regex.cvv.test($('#cvv').val())) {
+                    event.preventDefault();
+            }
         }
-    }
-    // ↓ Validate the name, email, and activities fieldset inputs:
-    //   And if false, prevent submission of form
-    if (!regex.name.test($('#name').val()) ||
+        // ↓ Validate the name, email, and activities fieldset inputs:
+        //   And if false, prevent submission of form
+        if (!regex.name.test($('#name').val()) ||
         !regex.mail.text($('#mail').val()) ||
         !isActivityChecked()) {
             event.preventDefault();
