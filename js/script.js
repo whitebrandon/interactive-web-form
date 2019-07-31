@@ -1,3 +1,13 @@
+/******************************************
+Treehouse Techdegree:
+FSJS project 3 - Interactive Form
+Name: Brandon White
+Date of Last Modification: 30/07/2019
+******************************************/
+
+'use strict';
+
+document.addEventListener('DOMContentLoaded', () => {
 /* ============================================
    ============ Basic Info Section ============
    ============================================ */
