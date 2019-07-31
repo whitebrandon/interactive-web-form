@@ -17,7 +17,7 @@ button {
 body {
   font: 1em/1.5;
   color: rgba(6, 49, 68, 0.9);
-		background: #e6f0f5;
+  background: #e6f0f5 url(../img/conference.jpg);
 }
 
 header {
