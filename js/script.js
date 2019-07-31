@@ -209,14 +209,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 // ↓ If user attempts to key additional chars the tooltip message
                 //   is changed to one that states the max char limit for input
                 $(element).on('keypress', function () { 
-                    $(this).next().html(`<p>Field cannot be longer than ${maxNumber} characters</p>`)
-                           .slideDown().delay(2000).slideUp();
-                });
-            } else { // ↓ If user deletes a char, the tooltip message reverts to orig version
-                     //   and the keypress eventListener is removed from input
-                $(element).next().html(`<p>Please ${errorMessages[index].msg}</p>`);
-                $(element).off('keypress');
-            };
+                        $(this).next().html(`<p>Field cannot have more than ${maxNumber} characters</p>`)
+                                      .slideDown().delay(2000).slideUp();
+                    });
+                } else { // ↓ If user deletes a char, the tooltip message reverts to orig version
+                        //   and the keypress eventListener is removed from input
+                    $(element).next().html(`<p>Please ${errorMessages[index].msg}</p>`);
+                    $(element).off('keypress');
+                };
         })();
         })
     }
