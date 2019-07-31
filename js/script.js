@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $('#other-title').hide(); // ← Hides other-title input on page load
 
     $('#title').on('change', function () { // ← Listens for change event on Job Role drop down
-        // ↓ If client selects option "other", show Job Role text input,
+        // ↓ If user selects option "other", show Job Role text input,
         //   otherwise, hide Job Role text input if shown
         if ($(this).val() === "other") {
             $('#other-title').fadeIn();
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ↓ Listens for change event on Design menu and 
     //   makes sure none of the options have the selected attribute
-    $('#design').on('change', function () {
+    $('#design').on('change', () => {
         $("#colors-js-puns").show();
         $('#color option').each(function () {
             if ($(this).attr('selected') === "selected") {
@@ -105,14 +105,14 @@ document.addEventListener('DOMContentLoaded', () => {
         $('.activities input').each(function () {
             const $comparisonText = $(this).parent().text(); // ← Grabs text for each checkbox input 
             // ↓ An IEFE that stores a day of the week substring from the selected activity
-            const $day = (function () {
+            const $day = (() => {
                 const $emdashIndex = $labelText.indexOf('—');
                 const $day = $labelText.slice($emdashIndex + 2, $emdashIndex + 12);
                 const $eodIndex = $day.indexOf(' ');
                 return $day.substring(0, $eodIndex);
             })();
             // ↓ An IEFE that stares a start time substring from the selected activity
-            const $startTime = (function () {
+            const $startTime = (() => {
                 const $hypenIndex = $labelText.indexOf('-');
                 return $labelText.slice($hypenIndex - 3, $hypenIndex);
             })();
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
             $(element).attr("maxlength", maxNumber);
         }
         // ↓ An IEFE that creates the validation for the element passed into function
-        (function () {
+        (() => {
             let isValid = regex.test($(element).val()); // ← test regex stores bool into isValid
             if (!isValid) { // ↓ If isValid is false, show tootlip
                 $(element).css("border", "2px solid red")[method]().slideDown();
@@ -209,9 +209,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // ↓ If user attempts to key additional chars the tooltip message
                 //   is changed to one that states the max char limit for input
                 $(element).on('keypress', function () { 
-                    $(this).next()
-                              .html(`<p>Field can not be longer than ${maxNumber} characters</p>`)
-                              .slideDown().delay(2000).slideUp();
+                    $(this).next().html(`<p>Field cannot be longer than ${maxNumber} characters</p>`)
+                           .slideDown().delay(2000).slideUp();
                 });
             } else { // ↓ If user deletes a char, the tooltip message reverts to orig version
                      //   and the keypress eventListener is removed from input
