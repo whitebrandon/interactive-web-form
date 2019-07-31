@@ -2,7 +2,7 @@
 Treehouse Techdegree:
 FSJS project 3 - Interactive Form
 Name: Brandon White
-Date of Last Modification: 30/07/2019
+Date of Last Modification: 31/07/2019
 ******************************************/
 
 'use strict';
@@ -46,33 +46,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 $(this).attr('selected', false);
             }
         });
-        // ↓ Shows T-shirt colors that match the JS Puns theme and hides all others
+        // ↓ Function that only shows T-shirt colors available for selected design theme
+        const tshirtColorFilter = (color, design) => {
+            // ↓ Sets arg passed in as color as default selection of T-shirt color
+            $(`#color option[value=${color}]`).attr('selected', true);
+            $('#color option').each(function () {
+                const $index = $(this).text().indexOf('(');
+                const $theme = $(this).text().slice($index + 1, $index + 7);
+                if ($theme === design) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                };
+            });
+        }
         if ($('#design').val() === "js puns") {
-            // ↓ Sets Cornflower Blue T-shirt color as default selection
-            $('#color option[value="cornflowerblue"]').attr('selected', true);
-            $('#color option').each(function () {
-                const $index = $(this).text().indexOf('(');
-                const $theme = $(this).text().slice($index + 1, $index + 7);
-                if ($theme === "JS Pun") {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            })
-            // ↓ Shows T-shirt colors that match the I ♥ JS theme and hides all others
+            tshirtColorFilter("cornflowerblue", "JS Pun");
         }   else if ($('#design').val() === "heart js") {
-            // ↓ Sets Tomato T-shirt color as default selection
-            $('#color option[value="tomato"]').attr('selected', true);
-            $('#color option').each(function () {
-                const $index = $(this).text().indexOf('(');
-                const $theme = $(this).text().slice($index + 1, $index + 7);
-                if ($theme === "I ♥ JS") {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            })
-    
+            tshirtColorFilter("tomato", "I ♥ JS");
         }
     });
     
@@ -91,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const $labelText = $currentInput.parent().text(); // ← Grabs text for target of event
         const $currencyIndex = $labelText.indexOf('$'); // ← Finds $ in text, and ↓ Gets price
         const $price = parseInt($labelText.slice($currencyIndex + 1, $currencyIndex + 4), 10);
-        if ($(this).prop('checked') === true) { // ← If target of event checked, add price to totalCost
+        if ($currentInput.prop('checked') === true) { // ← If target of event checked, add price to totalCost
             totalCost += $price;
         } else { // ← If target of event not checked, subtract price from totalCost
             totalCost -= $price;
@@ -119,11 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if ($comparisonText.includes($day) && 
                 $comparisonText.includes($startTime)) {
                 // ↓ Enables/RESETS all checkboxes that are disabled
-                if ($(this).prop('disabled') === true) {
-                    $(this).removeAttr('disabled');
+                if ($(this).attr('disabled')) {
+                    $(this).attr('disabled', false);
                     $(this).parent().css("text-decoration", "none");
                 // ↓ Disables checkbox if it conflicts w/ day and time of selected activity
-                } else if ($currentInput.parent().text() !== $(this).parent().text()) {
+                } else if ($labelText !== $(this).parent().text()) {
                     $(this).attr("disabled", true);
                     $(this).parent().css("text-decoration", "line-through");
                 }
@@ -150,9 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $bitcoin.hide(); // ← Hides bitcoin payment option on load
     $('#payment :first-child').hide(); // ← Hides "Select Payment Method" from "...pay with:" drop down
     // ↓ On Card Number focus, the value of the payment select element auto changes to credit card
-    $('#cc-num').focus(() => { 
-        $('#payment option[value="credit card"]').attr("selected", true);
-    });
+    $('#cc-num').focus(() => $('#payment option[value="credit card"]').attr("selected", true));
 
     // ↓ Adds eventListener to payment select element that calls the 
     //   togglePayDisplay function and shows/hides appropriate payment options
@@ -187,15 +176,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // ↓ Function that when called will create error message and add it to page
-    const createTooltip = (befOrAft, element, message) => {
-        $('<div>')['insert' + befOrAft](element).html(`<p>Please ${message}</p>`).css("color", "red").hide();
+    const createTooltip = (preposition, element, message) => {
+        $('<div>')[`insert${preposition}`](element).html(`<p>Please ${message}</p>`).css("color", "red").hide();
     }
     // ↓ Function that adds an eventListener to an [input] element
     const bindEvent = (element, regex, method, index, maxNumber) => {
         $(element).on('input blur', () => { // ← Listens for 'input' and 'blur' events
-        if (maxNumber) { // ← Adds a maxlength attribute if a maxNumber arg is passed into function
-            $(element).attr("maxlength", maxNumber);
-        }
+        $(element).attr("maxlength", maxNumber); // ← Sets a maxlength for input
         // ↓ An IEFE that creates the validation for the element passed into function
         (() => {
             let isValid = regex.test($(element).val()); // ← test regex stores bool into isValid
@@ -204,18 +191,20 @@ document.addEventListener('DOMContentLoaded', () => {
             } else { // ↓ If isValid is true, hide tooltip
                 $(element).css("border", "2px solid #b0d3e2")[method]().slideUp();
             }
-            // ↓ Upon reaching max char limit, a keypress eventListener is added to input
-            if ($(element).val().length === maxNumber) {
-                // ↓ If user attempts to key additional chars the tooltip message
-                //   is changed to one that states the max char limit for input
-                $(element).on('keypress', function () { 
-                    $(this).next().html(`<p>Field cannot be longer than ${maxNumber} characters</p>`)
-                           .slideDown().delay(2000).slideUp();
-                });
-            } else { // ↓ If user deletes a char, the tooltip message reverts to orig version
-                     //   and the keypress eventListener is removed from input
-                $(element).next().html(`<p>Please ${errorMessages[index].msg}</p>`);
-                $(element).off('keypress');
+            if (index) {
+                // ↓ Upon reaching max char limit, a keypress eventListener is added to input
+                if ($(element).val().length === maxNumber) {
+                    // ↓ If user attempts to key additional chars the tooltip message
+                    //   is changed to one that states the max char limit for input
+                    $(element).on('keypress', function () { 
+                        $(this).next().html(`<p>Field cannot have more than ${maxNumber} characters</p>`)
+                                      .slideDown().delay(2000).slideUp();
+                    });
+                } else { // ↓ If user deletes a char, the tooltip message reverts to orig version
+                        //   and the keypress eventListener is removed from input
+                    $(element).next().html(`<p>Please ${errorMessages[index].msg}</p>`);
+                    $(element).off('keypress');
+                };
             };
         })();
         })
@@ -245,16 +234,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // ↓ Calls bindEvent function for each text input that requires validation
-    bindEvent('#name', regex.name, 'prev', 0);
-    bindEvent('#mail', regex.mail, 'prev', 1);
+    bindEvent('#name', regex.name, 'prev');
+    bindEvent('#mail', regex.mail, 'prev');
     bindEvent('#cc-num', regex.cc_num, 'next', 3, 16);
     bindEvent('#zip', regex.zip, 'next', 4, 5);
     bindEvent('#cvv', regex.cvv, 'next', 5, 3);
 
     // ↓ Listens for events on any of the checkboxes and calls isActivityChecked func when triggered 
-    $('.activities').on('change blur', 'input', () => {
-        isActivityChecked();
-    });
+    $('.activities').on('change blur', 'input', () => isActivityChecked());
 
     $('form').on('submit', (event) => {
         // ↓ If selected payment option is equal to credit card, or unchanaged from page load:
@@ -275,9 +262,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 event.preventDefault();
         }
         // ↓ Triggers event on all eventListeners just in case user has not
-        $('input[id]').each(function () {
+        $('input').each(function () {
             $(this).blur();                           
         });
-        $('.activities input').blur();
     });
 });
