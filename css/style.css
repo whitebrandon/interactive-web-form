@@ -119,6 +119,10 @@ input[type="radio"] {
 	display: inline-block;
 }
 
+input[type="checkbox"] {
+	margin-right: 1em;
+}
+
 button {
 	color: #fff;
 	padding: .55em 1.25em;
