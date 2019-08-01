@@ -3,6 +3,7 @@
 ==================================== */
 
 @import url('https://fonts.googleapis.com/css?family=Nunito|Roboto+Mono');
+@import url('https://fonts.googleapis.com/css?family=Jua&display=swap');
 
 * {
   box-sizing: border-box;
@@ -15,7 +16,7 @@ button {
 }
 
 body {
-	font: 1em/1.5;
+	font: 1.5em/1.5;
 	color: rgba(6, 49, 68, 0.9);
 	background: linear-gradient(#e6f0f5, transparent 40%),
 				  linear-gradient(0deg, rgba(255,255,0, .5), transparent 45%),
@@ -24,6 +25,8 @@ body {
 }
 
 header {
+	font-family: 'Jua';
+	font-size: 125%;
 	text-align: center;
 	color: #03226b;
 }
