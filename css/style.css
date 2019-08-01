@@ -20,7 +20,7 @@ body {
 	color: rgba(6, 49, 68, 0.9);
 	background: linear-gradient(#e6f0f5, transparent 40%),
 				  linear-gradient(0deg, rgba(255,255,0, .5), transparent 45%),
-				#e6f0f5 url("../img/conference.jpeg") no-repeat center;
+				#e6f0f5 url("../img/conference_edit.jpg") no-repeat center;
 	background-size: cover;
 }
 
