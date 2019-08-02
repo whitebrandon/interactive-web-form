@@ -25,9 +25,8 @@ The objective of this project was to enhance a form so that it’s engaging, int
 1. JQuery has been used extensively in this project (to show & hide as well as to add fading and sliding animations to elements). I would wager that over 80% of this project utilizes JQuery objects, selectors/filtering, methods and chaining to write more sparse and cleaner code.
 2. The code is split into five sections: Basic Info, T-Shirt Info, Activities, Payment Info, and Validation.
 3. Both arrow functions and regular function expressions have been used (as well as IEFEs), with the function expressions used primarily because of their own bindings to the 'this' keyword.
-4. There are four functions defined within the global scope:
-    - The **togglePayDisplay()** function accepts three parameters, and shows one element while hiding the other two.
-    - The **createTooltip()** function accepts three parameters, and creates and appends a hidden error message to the DOM.
+4. There are three functions defined within the global scope:
+    - The **createTooltip()** function accepts three parameters, and creates & appends a hidden error message to the DOM.
     - The **bindEvent()** function accepts up to five parameters, and adds input and blur event listeners to text inputs which would then trigger a callback function that checks if the value of the text inputs are properly formatted. 
     - The **isActivityChecked()** function performs validation for the 'Activities' fieldset. It works by checking if each individiual checkbox is selected and pushing the true or false value of that check into an Array. Then the Array, itself, is checked to determine if one of its values is true. If so no error message is shown and true is returned to the function. If not, an error message is shown and false is returned to the function.
 5. An Array of objects was created to store the property/value pairs of the arguments for the **createTooltip()** function.
