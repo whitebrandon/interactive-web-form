@@ -2,7 +2,7 @@
 Treehouse Techdegree:
 FSJS project 3 - Interactive Form
 Name: Brandon White
-Date of Last Modification: 31/07/2019
+Date of Last Modification: 01/08/2019
 ******************************************/
 
 'use strict';
@@ -29,12 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
        =========== T-Shirt Info Section ===========
        ============================================ */
     
-    $('#design :first-child').hide(); // ← Hides 'Select Theme' from Design drop down
+    $('#design :first-child').hide(); // ← Hides 'Select Theme' from Design menu
     $("#colors-js-puns").hide(); // ← Hides 'Color:' label and corresponding drop down menu
-    $('#color option').each(function () { // ← Hides all options in T-shirt color menu
-        $(this).hide();
-    });
-    // ↓ Prepends a new option element to the T-shirt color menu
+    $('#color option').each((i) => $('#color option').eq(i).hide()); // ← Hides all options in color menu
+    // ↓ Prepends a new option element to the color menu
     $('#color').prepend($('<option>').attr('selected', true).text('Please select a T-shirt theme'));
 
     // ↓ Listens for change event on Design menu and 
@@ -42,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $('#design').on('change', () => {
         $("#colors-js-puns").show();
         $('#color option').each(function () {
-            if ($(this).attr('selected') === "selected") {
+            if ($(this).attr('selected')) {
                 $(this).attr('selected', false);
             }
         });
@@ -51,9 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // ↓ Sets arg passed in as color as default selection of T-shirt color
             $(`#color option[value=${color}]`).attr('selected', true);
             $('#color option').each(function () {
-                const $index = $(this).text().indexOf('(');
-                const $theme = $(this).text().slice($index + 1, $index + 7);
-                if ($theme === design) {
+                const $theme = $(this).text();
+                if ($theme.includes(design)) {
                     $(this).show();
                 } else {
                     $(this).hide();
@@ -80,9 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
     $('.activities').on('change', 'input', function () {
         const $currentInput = $(this); // ← Grabs the target of the event
         const $labelText = $currentInput.parent().text(); // ← Grabs text for target of event
-        const $currencyIndex = $labelText.indexOf('$'); // ← Finds $ in text, and ↓ Gets price
-        const $price = parseInt($labelText.slice($currencyIndex + 1, $currencyIndex + 4), 10);
-        if ($currentInput.prop('checked') === true) { // ← If target of event checked, add price to totalCost
+        const $price = parseInt($labelText.slice($labelText.indexOf('$') + 1), 10); // ← Gets price from text
+        if ($currentInput.prop('checked')) { // ← If target of event checked, add price to totalCost
             totalCost += $price;
         } else { // ← If target of event not checked, subtract price from totalCost
             totalCost -= $price;
@@ -98,9 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // ↓ An IEFE that stores a day of the week substring from the selected activity
             const $day = (() => {
                 const $emdashIndex = $labelText.indexOf('—');
-                const $day = $labelText.slice($emdashIndex + 2, $emdashIndex + 12);
-                const $eodIndex = $day.indexOf(' ');
-                return $day.substring(0, $eodIndex);
+                return $labelText.slice($emdashIndex + 2);
             })();
             // ↓ An IEFE that stares a start time substring from the selected activity
             const $startTime = (() => {
@@ -127,31 +121,21 @@ document.addEventListener('DOMContentLoaded', () => {
        ============================================ */
     
     const $creditCard = $('#payment').next(); // ← Grabs credit card payment option
-    const $paypal = $('#payment').next().next().first(); // ← Grabs paypal payment option
-    const $bitcoin = $('#payment').next().next().next().first(); // ← Grabs bitcoin payment option
+    const $paypal = $creditCard.next().first(); // ← Grabs paypal payment option
+    const $bitcoin = $paypal.next().first(); // ← Grabs bitcoin payment option
+    $creditCard.siblings('div').hide(); // ← Hides paypal & bitcoin payment options on load
+    $('#payment :first-child').hide(); // ← Hides "Select Payment Method" from "...pay with:" menu    
+    $('#payment option:eq(1)').attr("selected", true); // ← On page load, credit card *selected* by default
 
-    // ↓ Function that—when called—toggles display of the payment options
-    const togglePayDisplay = (showEl, hideEl_1, hideEl_2) => {
-        showEl['show']();
-        hideEl_1['hide']();
-        hideEl_2['hide']();
-    }
-
-    $paypal.hide(); // ← Hides paypal payment option on load
-    $bitcoin.hide(); // ← Hides bitcoin payment option on load
-    $('#payment :first-child').hide(); // ← Hides "Select Payment Method" from "...pay with:" drop down
-    // ↓ On Card Number focus, the value of the payment select element auto changes to credit card
-    $('#cc-num').focus(() => $('#payment option[value="credit card"]').attr("selected", true));
-
-    // ↓ Adds eventListener to payment select element that calls the 
-    //   togglePayDisplay function and shows/hides appropriate payment options
+    // ↓ Adds eventListener to payment select element that shows/hides appropriate payment options
     $('#payment').on('change', function () {
+        $(this).siblings('div').hide();
         if ($(this).val() === "paypal") {
-            togglePayDisplay($paypal, $bitcoin, $creditCard);
+            $paypal.show();
         } else if ($(this).val() === "bitcoin") {
-            togglePayDisplay($bitcoin, $paypal, $creditCard);
+            $bitcoin.show();
         } else if ($(this).val() === "credit card") {
-            togglePayDisplay($creditCard, $paypal, $bitcoin);
+            $creditCard.show();
         }
     });
     
@@ -245,8 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     $('form').on('submit', (event) => {
         // ↓ If selected payment option is equal to credit card, or unchanaged from page load:
-        if ($('#payment').val() === "credit card" ||
-            $('#payment').val() === "select_method") {
+        if ($('#payment').val() === "credit card") {
             // ↓ then validate the credit card info: if false, prevent submission of form
             if (!regex.cc_num.test($('#cc-num').val()) ||
                 !regex.zip.test($('#zip').val()) ||
@@ -262,8 +245,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 event.preventDefault();
         }
         // ↓ Triggers event on all eventListeners just in case user has not
-        $('input').each(function () {
-            $(this).blur();                           
-        });
+        $('input').each((i) => $('input').eq(i).blur());
     });
 });
