@@ -2,7 +2,7 @@
 Treehouse Techdegree:
 FSJS project 3 - Interactive Form
 Name: Brandon White
-Date of Last Modification: 01/08/2019
+Date of Last Modification: 03/08/2019
 ******************************************/
 
 'use strict';
