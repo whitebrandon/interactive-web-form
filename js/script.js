@@ -124,9 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const $paypal = $creditCard.next().first(); // ← Grabs paypal payment option
     const $bitcoin = $paypal.next().first(); // ← Grabs bitcoin payment option
     $creditCard.siblings('div').hide(); // ← Hides paypal & bitcoin payment options on load
-    $('#payment :first-child').hide(); // ← Hides "Select Payment Method" from "...pay with:" menu
-    // ↓ On Card Number focus, the value of the payment select element auto changes to credit card
-    $('#cc-num').focus(() => $('#payment option[value="credit card"]').attr("selected", true));
+    $('#payment :first-child').hide(); // ← Hides "Select Payment Method" from "...pay with:" menu    
+    $creditCard.attr("selected", true); // ← On page load, credit card shows as selected by default
 
     // ↓ Adds eventListener to payment select element that shows/hides appropriate payment options
     $('#payment').on('change', function () {
@@ -230,8 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     $('form').on('submit', (event) => {
         // ↓ If selected payment option is equal to credit card, or unchanaged from page load:
-        if ($('#payment').val() === "credit card" ||
-            $('#payment').val() === "select_method") {
+        if ($('#payment').val() === "credit card") {
             // ↓ then validate the credit card info: if false, prevent submission of form
             if (!regex.cc_num.test($('#cc-num').val()) ||
                 !regex.zip.test($('#zip').val()) ||
