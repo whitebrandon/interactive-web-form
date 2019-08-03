@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const $bitcoin = $paypal.next().first(); // ← Grabs bitcoin payment option
     $creditCard.siblings('div').hide(); // ← Hides paypal & bitcoin payment options on load
     $('#payment :first-child').hide(); // ← Hides "Select Payment Method" from "...pay with:" menu    
-    $creditCard.attr("selected", true); // ← On page load, credit card shows as selected by default
+    $('#payment option:eq(1)').attr("selected", true); // ← On page load, credit card *selected* by default
 
     // ↓ Adds eventListener to payment select element that shows/hides appropriate payment options
     $('#payment').on('change', function () {
