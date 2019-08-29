@@ -2,7 +2,7 @@
 Treehouse Techdegree:
 FSJS project 3 - Interactive Form
 Name: Brandon White
-Date of Last Modification: 01/08/2019
+Date of Last Modification: 28/08/2019
 ******************************************/
 
 'use strict';
@@ -18,11 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     $('#title').on('change', function () { // ← Listens for change event on Job Role drop down
         // ↓ If user selects option "other", show Job Role text input,
         //   otherwise, hide Job Role text input if shown
-        if ($(this).val() === "other") {
-            $('#other-title').fadeIn();
-        } else {
-            $('#other-title').fadeOut();
-        }
+        $(this).val() === "other" ? $('#other-title').fadeIn() : $('#other-title').fadeOut();
     });
     
     /* ============================================
@@ -50,11 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
             $(`#color option[value=${color}]`).attr('selected', true);
             $('#color option').each(function () {
                 const $theme = $(this).text();
-                if ($theme.includes(design)) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                };
+                $theme.includes(design) ? $(this).show() : $(this).hide();
             });
         }
         if ($('#design').val() === "js puns") {
@@ -78,16 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const $currentInput = $(this); // ← Grabs the target of the event
         const $labelText = $currentInput.parent().text(); // ← Grabs text for target of event
         const $price = parseInt($labelText.slice($labelText.indexOf('$') + 1), 10); // ← Gets price from text
-        if ($currentInput.prop('checked')) { // ← If target of event checked, add price to totalCost
-            totalCost += $price;
-        } else { // ← If target of event not checked, subtract price from totalCost
-            totalCost -= $price;
-        }
-        if (totalCost > 0) { // ← If totalCost gt 0 ↓ show totalMsg
-            $totalMsg.html(`Your total is: <strong>$${totalCost}</strong>.`).show();
-        } else { // ← otherwise, hide totalMsg
-            $totalMsg.hide();
-        }
+        // ↓ If target of event checked, add price to totalCost, otherwise subtract
+        $currentInput.prop('checked') ? totalCost += $price : totalCost -= $price;
+        // ↓ If totalCost gt 0 show totalMsg
+        totalCost > 0 ? $totalMsg.html(`Your total is: <strong>$${totalCost}</strong>.`).show() : $totalMsg.hide();
         // ↓ Loops through each checkbox
         $('.activities input').each(function () {
             const $comparisonText = $(this).parent().text(); // ← Grabs text for each checkbox input 
@@ -170,11 +156,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // ↓ An IEFE that creates the validation for the element passed into function
         (() => {
             let isValid = regex.test($(element).val()); // ← test regex stores bool into isValid
-            if (!isValid) { // ↓ If isValid is false, show tootlip
-                $(element).css("border", "2px solid red")[method]().slideDown();
-            } else { // ↓ If isValid is true, hide tooltip
-                $(element).css("border", "2px solid #b0d3e2")[method]().slideUp();
-            }
+            // ↓ If isValid is false, show tooltip
+            !isValid ? $(element).css("border", "2px solid red")[method]().slideDown() : $(element).css("border", "2px solid #b0d3e2")[method]().slideUp();
             if (index) {
                 // ↓ Upon reaching max char limit, a keypress eventListener is added to input
                 if ($(element).val().length === maxNumber) {
