@@ -2,12 +2,12 @@
 Treehouse Techdegree:
 FSJS project 3 - Interactive Form
 Name: Brandon White
-Date of Last Modification: 28/08/2019
+Date of Last Modification: 07/09/2019
 ******************************************/
 
 'use strict';
 
-document.addEventListener('DOMContentLoaded', () => {
+$(document).ready(() => {
     /* ============================================
        ============ Basic Info Section ============
        ============================================ */
@@ -31,24 +31,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // ↓ Prepends a new option element to the color menu
     $('#color').prepend($('<option>').attr('selected', true).text('Please select a T-shirt theme'));
 
+    // ↓ Function that only shows T-shirt colors available for selected design theme
+    const tshirtColorFilter = (color, design) => {
+        // ↓ Sets arg passed in as color as default selection of T-shirt color
+        $(`#color option[value=${color}]`).attr('selected', true);
+        $('#color option').each(function () {
+            const $theme = $(this).text();
+            $theme.includes(design) ? $(this).show() : $(this).hide();
+        });
+    }
+
     // ↓ Listens for change event on Design menu and 
     //   makes sure none of the options have the selected attribute
     $('#design').on('change', () => {
         $("#colors-js-puns").show();
         $('#color option').each(function () {
-            if ($(this).attr('selected')) {
                 $(this).attr('selected', false);
-            }
         });
-        // ↓ Function that only shows T-shirt colors available for selected design theme
-        const tshirtColorFilter = (color, design) => {
-            // ↓ Sets arg passed in as color as default selection of T-shirt color
-            $(`#color option[value=${color}]`).attr('selected', true);
-            $('#color option').each(function () {
-                const $theme = $(this).text();
-                $theme.includes(design) ? $(this).show() : $(this).hide();
-            });
-        }
         if ($('#design').val() === "js puns") {
             tshirtColorFilter("cornflowerblue", "JS Pun");
         }   else if ($('#design').val() === "heart js") {
@@ -77,12 +76,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // ↓ Loops through each checkbox
         $('.activities input').each(function () {
             const $comparisonText = $(this).parent().text(); // ← Grabs text for each checkbox input 
-            // ↓ An IEFE that stores a day of the week substring from the selected activity
+            // ↓ An IIFE that stores a day of the week substring from the selected activity
             const $day = (() => {
                 const $emdashIndex = $labelText.indexOf('—');
                 return $labelText.slice($emdashIndex + 2);
             })();
-            // ↓ An IEFE that stares a start time substring from the selected activity
+            // ↓ An IIFE that stores a start time substring from the selected activity
             const $startTime = (() => {
                 const $hypenIndex = $labelText.indexOf('-');
                 return $labelText.slice($hypenIndex - 3, $hypenIndex);
@@ -153,45 +152,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const bindEvent = (element, regex, method, index, maxNumber) => {
         $(element).on('input blur', () => { // ← Listens for 'input' and 'blur' events
         $(element).attr("maxlength", maxNumber); // ← Sets a maxlength for input
-        // ↓ An IEFE that creates the validation for the element passed into function
-        (() => {
-            let isValid = regex.test($(element).val()); // ← test regex stores bool into isValid
-            // ↓ If isValid is false, show tooltip
-            !isValid ? $(element).css("border", "2px solid red")[method]().slideDown() : $(element).css("border", "2px solid #b0d3e2")[method]().slideUp();
-            if (index) {
-                // ↓ Upon reaching max char limit, a keypress eventListener is added to input
-                if ($(element).val().length === maxNumber) {
-                    // ↓ If user attempts to key additional chars the tooltip message
-                    //   is changed to one that states the max char limit for input
-                    $(element).on('keypress', function () { 
-                        $(this).next().html(`<p>Field cannot have more than ${maxNumber} characters</p>`)
-                                      .slideDown().delay(2000).slideUp();
-                    });
-                } else { // ↓ If user deletes a char, the tooltip message reverts to orig version
-                        //   and the keypress eventListener is removed from input
-                    $(element).next().html(`<p>Please ${errorMessages[index].msg}</p>`);
-                    $(element).off('keypress');
+            // ↓ An IIFE that creates the validation for the element passed into function
+            (() => {
+                let isValid = regex.test($(element).val()); // ← test regex stores bool into isValid
+                // ↓ If isValid is false, show tooltip
+                !isValid ? $(element).css("border", "2px solid red")[method]().slideDown() : $(element).css("border", "2px solid #b0d3e2")[method]().slideUp();
+                if (index) {
+                    // ↓ Upon reaching max char limit, a keypress eventListener is added to input
+                    if ($(element).val().length === maxNumber) {
+                        // ↓ If user attempts to key additional chars the tooltip message
+                        //   is changed to one that states the max char limit for input
+                        $(element).on('keypress', function () { 
+                            $(this).next().html(`<p>Field cannot have more than ${maxNumber} characters</p>`)
+                                        .slideDown().delay(2000).slideUp();
+                        });
+                    } else { // ↓ If user deletes a char, the tooltip message reverts to orig version
+                            //   and the keypress eventListener is removed from input
+                        $(element).next().html(`<p>Please ${errorMessages[index].msg}</p>`);
+                        $(element).off('keypress');
+                    };
                 };
-            };
-        })();
+            })();
         })
     }
     // ↓ Creates validation for activities fieldset
     const isActivityChecked = () => {
-        const activitiesBoolList = []; // ← Creates an empty array
-        // ↓ Goes through each checkbox, checks if its checked property is true,
-        //   and pushes whatever that value is into the actvitiesdBoolList
-        $('.activities input').each(function () {
-            activitiesBoolList.push($(this).prop('checked'))
-        });
-        // ↓ If any of the checkboxes were/are true, hide tooltip
-        if (activitiesBoolList.includes(true)) {
+        if ($('.activities input:checked').length > 0) {
             $('.activities label:eq(0)').prev().slideUp();
-            return true; // ← Stores true into isActivityChecked
-        // ↓ If none of the checkboxes were/are true, show tooltip
+            return true;
         } else {
             $('.activities label:eq(0)').prev().slideDown();
-            return false; // ← Stores false into isActivityChecked
+            return false;
         };
     }
 
@@ -228,6 +219,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 event.preventDefault();
         }
         // ↓ Triggers event on all eventListeners just in case user has not
-        $('input').each((i) => $('input').eq(i).blur());
+        $('input').each(i => $('input').eq(i).blur());
     });
 });
