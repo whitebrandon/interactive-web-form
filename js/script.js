@@ -2,7 +2,7 @@
 Treehouse Techdegree:
 FSJS project 3 - Interactive Form
 Name: Brandon White
-Date of Last Modification: 07/09/2019
+Date of Last Modification: 06/07/2020
 ******************************************/
 
 'use strict';
@@ -187,7 +187,7 @@ $(document).ready(() => {
     }
 
     // ↓ Loops through errorMessages array an creates tooltips for each errorMessage object
-    for (let i = 0; i < errorMessages.length; i++) {
+    for (let i = 0, n = errorMessages.length; i < n; i++) {
         createTooltip(errorMessages[i].prop, errorMessages[i].el, errorMessages[i].msg);
     };
 
