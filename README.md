@@ -1,8 +1,4 @@
-# TECH DEGREE PROJECT #3 | INTERACTIVE FORM
-
-a COURSE BY TREEHOUSE
-
-JS CODE by Brandon White | white.brandonsean@gmail.com
+# INTERACTIVE WEB FORM
 
 ## Objective:
 The objective of this project was to enhance a form so that it’s engaging, interactive, and easy to use.
